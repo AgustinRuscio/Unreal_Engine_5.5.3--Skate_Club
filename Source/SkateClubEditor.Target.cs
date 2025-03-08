@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class SkateClubEditorTarget : TargetRules
 {
-	public SkateClubEditorTarget( TargetInfo Target) : base(Target)
+	public SkateClubEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
