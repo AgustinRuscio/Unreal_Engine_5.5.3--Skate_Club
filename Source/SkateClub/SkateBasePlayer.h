@@ -37,6 +37,7 @@ public:
 	//----------------------------------------------//
 	//				PUBLIC METHODS					//
 	//----------------------------------------------//
+	void ObstacleJumped(float Amount);
 
 protected:
 	//----------------------------------------------//
@@ -80,7 +81,6 @@ private:
 	//----------------------------------------------//
 	//				PRIVATE METHODS					//
 	//----------------------------------------------//
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	UFUNCTION()

@@ -8,6 +8,13 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SkateClub/Framework/SkateClubController.h"
+#include <Kismet/GameplayStatics.h>
+#include "Framework/SkateClubPlayerState.h"
+
+namespace
+{
+	float LastObstacleJumpedTime = 0;
+}
 
 //--------------------------------------------------------------------------------------------
 ASkateBasePlayer::ASkateBasePlayer() : WalkSpeed(400.f), SpeedUpSpeed(700.f), NormalFOV(90.f), SprintFOV(120.f)
@@ -25,6 +32,17 @@ ASkateBasePlayer::ASkateBasePlayer() : WalkSpeed(400.f), SpeedUpSpeed(700.f), No
 
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+//--------------------------------------------------------------------------------------------
+void ASkateBasePlayer::ObstacleJumped(float Amount)
+{
+	if(!GetCharacterMovement()->IsFalling()) return;
+
+	ASkateClubPlayerState* PS = GetPlayerState<ASkateClubPlayerState>();
+
+	if (PS)
+		PS->AddScore(Amount);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -85,6 +103,7 @@ void ASkateBasePlayer::Look(FVector2D VectorInput)
 //--------------------------------------------------------------------------------------------
 void ASkateBasePlayer::Sprint(bool IsSpringting)
 {
+if( GetCharacterMovement()->Velocity.Length() <= 0) return;
 	GetCharacterMovement()->MaxWalkSpeed = IsSpringting ? SpeedUpSpeed : WalkSpeed;
 	SprintFeedBack(IsSpringting);
 }
