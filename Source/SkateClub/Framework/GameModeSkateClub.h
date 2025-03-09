@@ -9,6 +9,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "GameModeSkateClub.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndGame);
+
 UCLASS()
 class SKATECLUB_API AGameModeSkateClub : public AGameModeBase
 {
@@ -19,18 +21,18 @@ public:
 	//----------------------------------------------//
 	//				PUBLIC VARIABLE					//
 	//----------------------------------------------//
+	FOnEndGame OnEndGame;
 
 	//----------------------------------------------//
 	//				PUBLIC METHODS					//
 	//----------------------------------------------//
-
+	void SetTime(float timer);
+	void StartGame();
 private:
 	//----------------------------------------------//
 	//				PRIVATE VARIABLE				//
 	//----------------------------------------------//
 	bool bGameLoop;
-	
-	UPROPERTY(EditDefaultsOnly, Category = Settings)
 	float GameTotalTime;
 	float GameTimer;
 

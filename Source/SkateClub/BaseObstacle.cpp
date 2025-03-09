@@ -46,15 +46,10 @@ void ABaseObstacle::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 	if (player && UseTimer >= ObstacleCoolDown)
 	{
-		player->ObstacleJumped(ObtaclePoints);
+		auto PointString = FString::SanitizeFloat(ObtaclePoints);
+
+		player->ObstacleJumped(ObtaclePoints, DisplayFeedBack, ObjectDisplayName, FText::FromString(PointString));
+
 		UseTimer = 0;
-
-		if (Controller)
-		{
-			auto PointString = FString::SanitizeFloat(ObtaclePoints);
-
-			Controller->PushObstaclePopUpWidget(DisplayFeedBack, ObjectDisplayName, FText::FromString(PointString));
-			Controller->PlayCameraShake();
-		}
 	}
 }

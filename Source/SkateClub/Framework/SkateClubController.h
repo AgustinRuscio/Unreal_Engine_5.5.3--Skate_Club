@@ -43,6 +43,8 @@ public:
 	void PlayCameraShake();
 	void PlayCameraShake(TSubclassOf<UCameraShakeBase> CustomCameraShake);
 
+	void GameEnded();
+
 private:
 	//----------------------------------------------//
 	//				PRIVATE VARIABLE				//
@@ -74,6 +76,9 @@ private:
 	TSubclassOf<class UWidgetStackBase> GameplayStackClass;
 	class UWidgetStackBase* GameplayStack;
 
+	UPROPERTY(EditDefaultsOnly, Category = UMG)
+	TSubclassOf<class UEndGmaeWidget> EndGameWidgetClass;
+	class UEndGmaeWidget* EndGameWidget;
 
 	UPROPERTY(EditDefaultsOnly, Category = FeedBack)
 	TSubclassOf<UCameraShakeBase> DefaultCameraShake;

@@ -43,7 +43,7 @@ public:
 	//----------------------------------------------//
 	//				PUBLIC METHODS					//
 	//----------------------------------------------//
-	void ObstacleJumped(float Amount);
+	void ObstacleJumped(float Amount, TSubclassOf<class UWidgetPopUpBase> PopUp, FText DisplayName, FText DisplayPoints);
 
 protected:
 	//----------------------------------------------//

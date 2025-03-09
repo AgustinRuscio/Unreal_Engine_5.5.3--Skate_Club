@@ -12,6 +12,7 @@
 #include <Kismet/GameplayStatics.h>
 #include "Framework/SkateClubPlayerState.h"
 #include "SkateClub/Widgets/PlayerCheersWidget.h"
+#include "Widgets/WidgetPopUpBase.h"
 
 namespace
 {
@@ -47,9 +48,12 @@ ASkateBasePlayer::ASkateBasePlayer() : WalkSpeed(400.f), SpeedUpSpeed(700.f), Ai
 }
 
 //--------------------------------------------------------------------------------------------
-void ASkateBasePlayer::ObstacleJumped(float Amount)
+void ASkateBasePlayer::ObstacleJumped(float Amount, TSubclassOf<UWidgetPopUpBase> PopUp, FText DisplayName, FText DisplayPoints)
 {
 	if(!GetCharacterMovement()->IsFalling()) return;
+
+	Controller->PushObstaclePopUpWidget(PopUp, DisplayName, DisplayPoints);
+	Controller->PlayCameraShake();
 
 	ASkateClubPlayerState* PS = GetPlayerState<ASkateClubPlayerState>();
 
@@ -181,7 +185,6 @@ void ASkateBasePlayer::ObtainedPointsFeedBack()
 	{
 		CheerWidgetRight->ShowText();
 	}
-
 }
 
 //--------------------------------------------------------------------------------------------

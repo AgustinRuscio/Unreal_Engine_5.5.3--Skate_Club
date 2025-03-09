@@ -14,20 +14,35 @@ namespace
 }
 
 //--------------------------------------------------------------------------------------------
-AGameModeSkateClub::AGameModeSkateClub() : bGameLoop(true), GameTotalTime(30.f), GameTimer(0.f)
+AGameModeSkateClub::AGameModeSkateClub() : bGameLoop(false), GameTotalTime(30.f), GameTimer(0.f)
 {
     PrimaryActorTick.bCanEverTick = true;
 }
 
 //--------------------------------------------------------------------------------------------
+void AGameModeSkateClub::SetTime(float timer)
+{
+    GameTotalTime = timer;
+    TimeLeft = GameTotalTime;
+}
+
+//--------------------------------------------------------------------------------------------
+void AGameModeSkateClub::StartGame()
+{
+    bGameLoop = true;
+    Controller->EnableInput(Controller);
+}
+
+//--------------------------------------------------------------------------------------------
 void AGameModeSkateClub::BeginPlay()
 {
-	TimeLeft = GameTotalTime;
+    Super::BeginPlay();
 
     FTimerDelegate del;
     del.BindLambda([this] 
         {
-		    Controller = Cast<ASkateClubController>(GetWorld()->GetFirstPlayerController());
+	        Controller = Cast<ASkateClubController>(GetWorld()->GetFirstPlayerController());
+            Controller->DisableInput(Controller);
 
 	        auto widget = Controller->PushToGameplayWidgetWithReturn(LevelWidgetClass);
 	        LevelWidget = Cast<UGameplayWidget>(widget);
@@ -51,7 +66,6 @@ void AGameModeSkateClub::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 
     if(!bGameLoop) return;
-
 
     TimeLeft = GameTotalTime - GameTimer;
     GameTimer += DeltaSeconds;
@@ -86,7 +100,8 @@ void AGameModeSkateClub::UpdateScore(float NewScore)
 //--------------------------------------------------------------------------------------------
 void AGameModeSkateClub::GameEnded()
 {
+    OnEndGame.Broadcast();
     bGameLoop = false;
-    Controller->PushToGameplayWidget(EndGameWidgetClass);
+    Controller->GameEnded();
     UE_LOG(LogTemp, Warning, TEXT("End"));
 }

@@ -8,9 +8,12 @@
 #include "Framework/Application/SlateApplication.h"
 #include "SkateClub/Widgets/WidgetStackBase.h"
 #include "SkateClub/Widgets/WidgetPopUpBase.h"
+#include "SkateClub/Widgets/EndGmaeWidget.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "CommonActivatableWidget.h"
+#include <Kismet/GameplayStatics.h>
+#include "SkateClubPlayerState.h"
 
 #pragma region Feedback Methods
 //--------------------------------------------------------------------------------------------
@@ -51,6 +54,26 @@ void ASkateClubController::PlayCameraShake(TSubclassOf<UCameraShakeBase> CustomC
 	ClientStartCameraShake(CustomCameraShake);
 }
 #pragma endregion
+
+//--------------------------------------------------------------------------------------------
+void ASkateClubController::GameEnded()
+{
+	auto widget = PushToGameplayWidgetWithReturn(EndGameWidgetClass);
+
+	EndGameWidget = Cast<UEndGmaeWidget>(widget);
+
+	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this);
+	FName LevelName = FName(*CurrentLevelName);
+	EndGameWidget->SetLevelName(LevelName);
+
+	ASkateClubPlayerState* PS = GetPawn()->GetPlayerState<ASkateClubPlayerState>();
+	EndGameWidget->SetTotalScore(PS->GetTotalScore());
+
+	bShowMouseCursor = true;
+
+	OnPlayerSlowDown.Broadcast();
+	SetInputMode(FInputModeUIOnly());
+}
 
 //--------------------------------------------------------------------------------------------
 void ASkateClubController::BeginPlay()
