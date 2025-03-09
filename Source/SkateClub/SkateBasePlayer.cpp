@@ -5,11 +5,13 @@
 
 #include "SkateBasePlayer.h"
 #include <Camera/CameraComponent.h>
+#include <Components/WidgetComponent.h>
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SkateClub/Framework/SkateClubController.h"
 #include <Kismet/GameplayStatics.h>
 #include "Framework/SkateClubPlayerState.h"
+#include "SkateClub/Widgets/PlayerCheersWidget.h"
 
 namespace
 {
@@ -17,7 +19,7 @@ namespace
 }
 
 //--------------------------------------------------------------------------------------------
-ASkateBasePlayer::ASkateBasePlayer() : WalkSpeed(400.f), SpeedUpSpeed(700.f), NormalFOV(90.f), SprintFOV(120.f)
+ASkateBasePlayer::ASkateBasePlayer() : WalkSpeed(400.f), SpeedUpSpeed(700.f), AirControl(0.01f), NormalFOV(90.f), SprintFOV(120.f), NormalJumpVelocity(420.f), SprintJumpVelocity(550.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -30,8 +32,18 @@ ASkateBasePlayer::ASkateBasePlayer() : WalkSpeed(400.f), SpeedUpSpeed(700.f), No
 	SkateMesh = CreateDefaultSubobject<UStaticMeshComponent>("Skate Mesh");
 	SkateMesh->SetupAttachment(GetMesh());
 
+	WidgetCompLeft = CreateDefaultSubobject<UWidgetComponent>("Cheers Widget Left");
+	WidgetCompLeft->SetupAttachment(GetMesh());
+	WidgetCompLeft->SetWidgetClass(PlayerCheerWidgetClass);
+
+	WidgetCompRight = CreateDefaultSubobject<UWidgetComponent>("Cheers WidgetRight");
+	WidgetCompRight->SetupAttachment(GetMesh());
+	WidgetCompRight->SetWidgetClass(PlayerCheerWidgetClass);
+
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed				  = WalkSpeed;
+	GetCharacterMovement()->JumpZVelocity				  = NormalJumpVelocity;
+	GetCharacterMovement()->AirControl					  = AirControl;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -43,12 +55,19 @@ void ASkateBasePlayer::ObstacleJumped(float Amount)
 
 	if (PS)
 		PS->AddScore(Amount);
+
+	ObtainedPointsFeedBack();
 }
 
 //--------------------------------------------------------------------------------------------
 void ASkateBasePlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CheerWidgetLeft = Cast<UPlayerCheersWidget>(WidgetCompLeft->GetUserWidgetObject());
+	CheerWidgetRight = Cast<UPlayerCheersWidget>(WidgetCompRight->GetUserWidgetObject());
+	CheerWidgetLeft->SetVisibility(ESlateVisibility::Hidden);
+	CheerWidgetRight->SetVisibility(ESlateVisibility::Hidden);
 
 	//--- FOV
 	FOnTimelineFloat CamFOVTick;
@@ -104,7 +123,9 @@ void ASkateBasePlayer::Look(FVector2D VectorInput)
 void ASkateBasePlayer::Sprint(bool IsSpringting)
 {
 if( GetCharacterMovement()->Velocity.Length() <= 0) return;
+
 	GetCharacterMovement()->MaxWalkSpeed = IsSpringting ? SpeedUpSpeed : WalkSpeed;
+	GetCharacterMovement()->JumpZVelocity = IsSpringting ? SprintJumpVelocity : NormalJumpVelocity;
 	SprintFeedBack(IsSpringting);
 }
 
@@ -120,6 +141,8 @@ void ASkateBasePlayer::PlayerJump()
 //--------------------------------------------------------------------------------------------
 void ASkateBasePlayer::SlowDown()
 {
+	if (GetCharacterMovement()->IsFalling()) return;
+
 	GetCharacterMovement()->StopMovementImmediately();
 }
 #pragma endregion
@@ -141,6 +164,24 @@ void ASkateBasePlayer::JumpFeedBack()
 
 	if (AnimIstance)
 		AnimIstance->Montage_Play(JumpMontage);
+}
+
+//--------------------------------------------------------------------------------------------
+void ASkateBasePlayer::ObtainedPointsFeedBack()
+{
+	UGameplayStatics::PlaySound2D(GetWorld(), SFX_ObtainScore);
+	UGameplayStatics::PlaySound2D(GetWorld(), SFX_Trick);
+	
+	if (CheerWidgetRight->GetIsVisible())
+	{
+		if(!CheerWidgetLeft->GetIsVisible())
+			CheerWidgetLeft->ShowText();
+	}
+	else
+	{
+		CheerWidgetRight->ShowText();
+	}
+
 }
 
 //--------------------------------------------------------------------------------------------

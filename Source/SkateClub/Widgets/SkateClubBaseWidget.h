@@ -6,26 +6,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "BaseObstacle.generated.h"
+#include "CommonActivatableWidget.h"
+#include "SkateClubBaseWidget.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
-class SKATECLUB_API ABaseObstacle : public AActor
+class SKATECLUB_API USkateClubBaseWidget : public UCommonActivatableWidget
 {
 	GENERATED_BODY()
 	
 public:	
-	ABaseObstacle();
-
-	//----------------------------------------------//
-	//				PUBLIC COMPONENTS				//
-	//----------------------------------------------//
-	UPROPERTY(EditDefaultsOnly, Category = Components)
-	UStaticMeshComponent* Mesh;
-
-	UPROPERTY(EditDefaultsOnly, Category = Components)
-	class UBoxComponent* BoxComp;
-
 	//----------------------------------------------//
 	//				PUBLIC VARIABLE					//
 	//----------------------------------------------//
@@ -33,40 +25,35 @@ public:
 	//----------------------------------------------//
 	//				PUBLIC METHODS					//
 	//----------------------------------------------//
+	void SetParentStack(class UWidgetStackBase* MyStackContainer);
 
 protected:
 	//----------------------------------------------//
 	//				PROTECTED VARIABLE				//
 	//----------------------------------------------//
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
+	float TimeOnScreen;
 
 	//----------------------------------------------//
 	//				PROTECTED METHODS				//
 	//----------------------------------------------//
-	virtual void BeginPlay() override;
-	virtual void Tick( float DeltaSeconds) override;
+	virtual void NativeOnActivated() override;
+
+	UFUNCTION()
+	virtual void SelfRemove();
 
 private:
 	//----------------------------------------------//
 	//				PRIVATE VARIABLE				//
 	//----------------------------------------------//
 	UPROPERTY(EditDefaultsOnly, Category = Settings)
-	float ObtaclePoints;
+	bool bAutoRemove;
 
-	UPROPERTY(EditDefaultsOnly, Category = Settings)
-	float ObstacleCoolDown;
+	FTimerHandle SelfRemoveTimerHandle;
 
-	float UseTimer;
-
-	UPROPERTY(EditDefaultsOnly, Category = Settings)
-	FText ObjectDisplayName;
-
-	UPROPERTY(EditDefaultsOnly, Category = Settings)
-	TSubclassOf<class UWidgetPopUpBase> DisplayFeedBack;
+	class UWidgetStackBase* StackContainer;
 
 	//----------------------------------------------//
 	//				PRIVATE METHODS					//
 	//----------------------------------------------//
-
-	UFUNCTION()
-	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

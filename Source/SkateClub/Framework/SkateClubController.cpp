@@ -6,13 +6,65 @@
 #include "SkateClubController.h"
 #include "EnhancedInput/Public/EnhancedInputComponent.h"
 #include "Framework/Application/SlateApplication.h"
+#include "SkateClub/Widgets/WidgetStackBase.h"
+#include "SkateClub/Widgets/WidgetPopUpBase.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h"
+#include "CommonActivatableWidget.h"
+
+#pragma region Feedback Methods
+//--------------------------------------------------------------------------------------------
+void ASkateClubController::PushObstaclePopUpWidget(TSubclassOf<UWidgetPopUpBase> PopUp, FText DisplayName, FText DisplayPoints)
+{
+	auto widget = PopUpsStack->PushWidgetToScreen(PopUp);
+
+	if (auto CastedWidget = Cast<UWidgetPopUpBase>(widget))
+	{
+		CastedWidget->SetParentStack(PopUpsStack);
+		CastedWidget->SetPopUp(DisplayName, DisplayPoints);
+	}
+}
+
+//--------------------------------------------------------------------------------------------
+void ASkateClubController::PushToGameplayWidget(TSubclassOf<class USkateClubBaseWidget> PopUp)
+{
+	GameplayStack->PushWidgetToScreen(PopUp);
+}
+
+//--------------------------------------------------------------------------------------------
+UCommonActivatableWidget* ASkateClubController::PushToGameplayWidgetWithReturn(TSubclassOf<class USkateClubBaseWidget> PopUp)
+{
+	auto widget = GameplayStack->PushWidgetToScreen(PopUp);
+
+	return widget;
+}
+
+//--------------------------------------------------------------------------------------------
+void ASkateClubController::PlayCameraShake()
+{
+	ClientStartCameraShake(DefaultCameraShake);
+}
+
+//--------------------------------------------------------------------------------------------
+void ASkateClubController::PlayCameraShake(TSubclassOf<UCameraShakeBase> CustomCameraShake)
+{
+	ClientStartCameraShake(CustomCameraShake);
+}
+#pragma endregion
 
 //--------------------------------------------------------------------------------------------
 void ASkateClubController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetInputs();
+
+	CreateWidgets();
+}
+
+//--------------------------------------------------------------------------------------------
+void ASkateClubController::SetInputs()
+{
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 
 	Subsystem->ClearAllMappings();
@@ -38,6 +90,16 @@ void ASkateClubController::BeginPlay()
 	}
 
 	SetInputMode(FInputModeGameOnly());
+}
+
+//--------------------------------------------------------------------------------------------
+void ASkateClubController::CreateWidgets()
+{
+	PopUpsStack = CreateWidget<UWidgetStackBase>(this, PopUpsStackClass);
+	PopUpsStack->AddToViewport(0);
+
+	GameplayStack = CreateWidget<UWidgetStackBase>(this, GameplayStackClass);
+	GameplayStack->AddToViewport(1);
 }
 
 //--------------------------------------------------------------------------------------------

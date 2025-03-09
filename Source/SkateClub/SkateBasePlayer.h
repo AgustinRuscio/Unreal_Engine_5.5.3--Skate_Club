@@ -30,6 +30,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* SkateMesh;
 
+	UPROPERTY(EditDefaultsOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UWidgetComponent* WidgetCompLeft;
+
+	UPROPERTY(EditDefaultsOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UWidgetComponent* WidgetCompRight;
+
 	//----------------------------------------------//
 	//				PUBLIC VARIABLE					//
 	//----------------------------------------------//
@@ -61,18 +67,38 @@ private:
 	float SpeedUpSpeed;
 
 	UPROPERTY(EditDefaultsOnly, Category = Settings)
+	float AirControl;
+
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
 	float NormalFOV;
 
 	UPROPERTY(EditDefaultsOnly, Category = Settings)
 	float SprintFOV;
 
 	UPROPERTY(EditDefaultsOnly, Category = Settings)
+	float NormalJumpVelocity;
+
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
+	float SprintJumpVelocity;
+
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
 	FName SocketName;
 
-	UPROPERTY(EditDefaultsOnly, Category = Visuals)
+	UPROPERTY(EditDefaultsOnly, Category = FeedBack)
 	class UAnimMontage* JumpMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = FeedBack)
+	USoundBase* SFX_ObtainScore;
+	UPROPERTY(EditDefaultsOnly, Category = FeedBack)
+	USoundBase* SFX_Trick;
+
 	class ASkateClubController* Controller;
+
+	UPROPERTY(EditDefaultsOnly, Category = UMG)
+	TSubclassOf<class UPlayerCheersWidget> PlayerCheerWidgetClass;
+
+	class UPlayerCheersWidget* CheerWidgetLeft;
+	class UPlayerCheersWidget* CheerWidgetRight;
 
 	UPROPERTY(EditDefaultsOnly, Category = Visuals)
 	UCurveFloat* CameraFOVTimeLine;
@@ -101,6 +127,8 @@ private:
 
 	void SprintFeedBack(bool bIsSprinting);
 	void JumpFeedBack();
+
+	void ObtainedPointsFeedBack();
 
 	UFUNCTION()
 	void CameraFOVTick(float DeltaSecods);

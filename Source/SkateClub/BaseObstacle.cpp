@@ -6,6 +6,7 @@
 #include "BaseObstacle.h"
 #include <Components/BoxComponent.h>
 #include "SkateClub/SkateBasePlayer.h"
+#include "Framework/SkateClubController.h"
 
 //--------------------------------------------------------------------------------------------
 ABaseObstacle::ABaseObstacle() : ObtaclePoints(10.f), ObstacleCoolDown(3.f), UseTimer(0.f)
@@ -41,10 +42,19 @@ void ABaseObstacle::Tick(float DeltaSeconds)
 void ABaseObstacle::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ASkateBasePlayer* player = Cast<ASkateBasePlayer>(OtherActor);
+	ASkateClubController* Controller = Cast<ASkateClubController>(GetWorld()->GetFirstPlayerController());
 
 	if (player && UseTimer >= ObstacleCoolDown)
 	{
 		player->ObstacleJumped(ObtaclePoints);
 		UseTimer = 0;
+
+		if (Controller)
+		{
+			auto PointString = FString::SanitizeFloat(ObtaclePoints);
+
+			Controller->PushObstaclePopUpWidget(DisplayFeedBack, ObjectDisplayName, FText::FromString(PointString));
+			Controller->PlayCameraShake();
+		}
 	}
 }

@@ -20,7 +20,7 @@ float ASkateClubPlayerState::GetTotalScore() const
 //--------------------------------------------------------------------------------------------
 void ASkateClubPlayerState::AddScore(float ScoreToAdd)
 {
-	float diff = LastPointObtain - UGameplayStatics::GetRealTimeSeconds(GetWorld());
+	float diff = UGameplayStatics::GetRealTimeSeconds(GetWorld()) - LastPointObtain;
 	LastPointObtain = UGameplayStatics::GetRealTimeSeconds(GetWorld());
 
 	if(diff <= BonificationTime)
@@ -28,5 +28,5 @@ void ASkateClubPlayerState::AddScore(float ScoreToAdd)
 
 	TotalAmount += ScoreToAdd;
 
-	UE_LOG(LogTemp, Warning, TEXT("%f"), TotalAmount)
+	OnScore.Broadcast(TotalAmount);
 }

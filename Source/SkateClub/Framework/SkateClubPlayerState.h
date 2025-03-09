@@ -9,9 +9,8 @@
 #include "GameFramework/PlayerState.h"
 #include "SkateClubPlayerState.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnScore, float, NewScore);
+
 UCLASS()
 class SKATECLUB_API ASkateClubPlayerState : public APlayerState
 {
@@ -21,7 +20,7 @@ public:
 	//----------------------------------------------//
 	//				PUBLIC VARIABLE					//
 	//----------------------------------------------//
-
+	FOnScore OnScore;
 
 	//----------------------------------------------//
 	//				PUBLIC METHODS					//

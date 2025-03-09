@@ -35,6 +35,14 @@ public:
 	//				PUBLIC METHODS					//
 	//----------------------------------------------//
 
+	void PushObstaclePopUpWidget(TSubclassOf<class UWidgetPopUpBase> PopUp, FText DisplayName, FText DisplayPoints);
+
+	void PushToGameplayWidget(TSubclassOf<class USkateClubBaseWidget> PopUp);
+	class UCommonActivatableWidget* PushToGameplayWidgetWithReturn(TSubclassOf<class USkateClubBaseWidget> PopUp);
+
+	void PlayCameraShake();
+	void PlayCameraShake(TSubclassOf<UCameraShakeBase> CustomCameraShake);
+
 private:
 	//----------------------------------------------//
 	//				PRIVATE VARIABLE				//
@@ -57,11 +65,26 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* SlowDownAction;
 
+
+	UPROPERTY(EditDefaultsOnly, Category = UMG)
+	TSubclassOf<class UWidgetStackBase> PopUpsStackClass;
+	class UWidgetStackBase* PopUpsStack;
+
+	UPROPERTY(EditDefaultsOnly, Category = UMG)
+	TSubclassOf<class UWidgetStackBase> GameplayStackClass;
+	class UWidgetStackBase* GameplayStack;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = FeedBack)
+	TSubclassOf<UCameraShakeBase> DefaultCameraShake;
+
 	//----------------------------------------------//
 	//				PRIVATE METHODS					//
 	//----------------------------------------------//
 	virtual void BeginPlay() override;
 
+	void SetInputs();
+	void CreateWidgets();
 
 	void PlayerMovement(const FInputActionValue& value);
 	void PlayerLookAround(const FInputActionValue& value);
